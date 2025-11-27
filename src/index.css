@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+
+
+@layer base {
+  :root {
+    --font-sora: 'Sora', sans-serif;
+
+    --background: 0 0% 100%;
+    --foreground: 240 100% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 100% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 100% 10%;
+
+    --primary: 240 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    
+    --primary-deep: 240 100% 35%;
+    --primary-bright: 216 100% 57%;
+    --primary-cyan: 194 100% 57%;
+
+    --secondary: 216 100% 97%;
+    --secondary-foreground: 240 100% 50%;
+
+    --muted: 216 100% 97%;
+    --muted-foreground: 240 30% 50%;
+
+    --accent: 194 100% 57%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 216 100% 92%;
+    --input: 216 100% 92%;
+    --ring: 240 100% 50%;
+
+    --radius: 0.75rem;
+    
+    --gradient-primary: linear-gradient(135deg, hsl(240 100% 50%), hsl(216 100% 57%));
+    --gradient-accent: linear-gradient(135deg, hsl(216 100% 57%), hsl(194 100% 57%));
+    --gradient-hero: linear-gradient(135deg, hsl(240 100% 50%) 0%, hsl(216 100% 57%) 50%, hsl(194 100% 57%) 100%);
+    
+    --shadow-glow: 0 0 40px hsl(240 100% 50% / 0.3);
+    --shadow-card: 0 10px 30px -10px hsl(240 100% 50% / 0.2);
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 100%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 221.2 83.2% 53.3%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 240 100% 5%;
+    --foreground: 0 0% 100%;
+
+    --card: 240 80% 8%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 240 80% 8%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 240 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    
+    --primary-deep: 240 100% 35%;
+    --primary-bright: 216 100% 57%;
+    --primary-cyan: 194 100% 57%;
+
+    --secondary: 240 50% 15%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 50% 15%;
+    --muted-foreground: 240 20% 70%;
+
+    --accent: 194 100% 57%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 50% 20%;
+    --input: 240 50% 20%;
+    --ring: 240 100% 50%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border font-sora;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sora;
+  }
+
+  html {
+    font-family: 'Sora', sans-serif;
+  }
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
