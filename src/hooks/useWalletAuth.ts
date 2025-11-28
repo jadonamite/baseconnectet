@@ -1,297 +1,288 @@
-// import { useToast } from "@/hooks/use-toast";
-// import { useAuth } from "@/providers/AuthProvider";
-// import { useAccount, useSignMessage } from 'wagmi';
-
-// export const useWalletAuth = () => {
-//   const { toast } = useToast();
-//   const { refresh } = useAuth();
-//   const { address, isConnected } = useAccount();
-//   const { signMessageAsync } = useSignMessage();
-
-//   const authenticateWithWallet = async () => {
-//     if (!isConnected || !address) {
-//       throw new Error('Please connect your wallet before continuing');
-//     }
-
-//     const walletAddress = address.toLowerCase();
-
-//     // Request nonce from server
-//     const nonceRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/wallet/request`, {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ walletAddress }),
-//     });
-
-//     const nonceData = await nonceRes.json();
-//     if (!nonceRes.ok) {
-//       throw new Error(nonceData.message || 'Failed to initiate wallet authentication');
-//     }
-
-//     const message = `BaseConnect authentication nonce: ${nonceData.nonce}`;
-
-//     // Use wagmi to sign the message instead of window.ethereum
-//     const signature = await signMessageAsync({ account: address, message });
-
-//     // Verify signature with server
-//     const verifyRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/wallet/verify`, {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ walletAddress, signature }),
-//     });
-
-//     const verifyData = await verifyRes.json();
-//     if (!verifyRes.ok) {
-//       throw new Error(verifyData.message || 'Wallet authentication failed');
-//     }
-
-//     localStorage.setItem('token', verifyData.token);
-//     await refresh();
-
-//     // Notify external verification endpoint (non-blocking)
-//     try {
-//       const KICKOFF_SLUG = import.meta.env.VITE_KICKOFF_SLUG || 'baseconnect';
-//       const KICKOFF_API_KEY = import.meta.env.VITE_KICKOFF_API_KEY || '694de713-bfb1-4e96-b8a1-a99db6595a0e';
-//       const kickoffRes = await fetch(`https://www.kickoff.fun/api/projects/${KICKOFF_SLUG}/verify-task`, {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           'X-API-Key': KICKOFF_API_KEY,
-//         },
-//         body: JSON.stringify({ walletAddress, taskType: 'connect_wallet' }),
-//       });
-//       if (!kickoffRes.ok) {
-//         console.warn('Kickoff verification failed', await kickoffRes.text());
-//       }
-//     } catch (e) {
-//       console.warn('Kickoff verification error', e);
-//     }
-
-//     return verifyData.user;
-//   };
-
-//   const withToast = async () => {
-//     try {
-//       return await authenticateWithWallet();
-//     } catch (error) {
-//       const message = error instanceof Error ? error.message : 'Wallet authentication failed';
-//       toast({
-//         title: 'Wallet Error',
-//         description: message,
-//         variant: 'destructive',
-//       });
-//       throw error;
-//     }
-//   };
-
-//   return { authenticateWithWallet: withToast };
-// };
-
-
-
-
-
-// import { useToast } from "@/hooks/use-toast";
-// import { useAuth } from "@/providers/AuthProvider";
-// import { useAccount, useSignMessage } from "wagmi";
-
-// export const useWalletAuth = () => {
-//   const { toast } = useToast();
-//   const { refresh } = useAuth();
-//   const { address, isConnected } = useAccount();
-//   const { signMessageAsync } = useSignMessage();
-
-//   const authenticateWithWallet = async () => {
-//     if (!isConnected || !address) {
-//       throw new Error("Please connect your wallet before continuing");
-//     }
-
-//     const walletAddress = address.toLowerCase();
-
-//     // 1️⃣ Request a nonce from your backend
-//     const nonceRes = await fetch(
-//       `${import.meta.env.VITE_API_URL}/api/auth/wallet/request`,
-//       {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ walletAddress }),
-//       }
-//     );
-
-//     const nonceData = await nonceRes.json();
-
-//     if (!nonceRes.ok) {
-//       throw new Error(
-//         nonceData.message || "Failed to initiate wallet authentication"
-//       );
-//     }
-
-//     const message = `BaseConnect authentication nonce: ${nonceData.nonce}`;
-
-//     // 2️⃣ Sign message using wagmi (updated)
-//     const signature = await signMessageAsync({
-//   account: address as `0x${string}`,
-//   message,
-// });
-
-
-//     // 3️⃣ Verify signed message with your backend
-//     const verifyRes = await fetch(
-//       `${import.meta.env.VITE_API_URL}/api/auth/wallet/verify`,
-//       {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//           walletAddress,
-//           signature,
-//         }),
-//       }
-//     );
-
-//     const verifyData = await verifyRes.json();
-
-//     if (!verifyRes.ok) {
-//       throw new Error(
-//         verifyData.message || "Wallet authentication failed"
-//       );
-//     }
-
-//     // Store JWT from backend
-//     localStorage.setItem("token", verifyData.token);
-
-//     await refresh();
-
-//     // 4️⃣ (Non-blocking) Kickoff task verification
-//     try {
-//       const KICKOFF_SLUG =
-//         import.meta.env.VITE_KICKOFF_SLUG || "baseconnect";
-//       const KICKOFF_API_KEY =
-//         import.meta.env.VITE_KICKOFF_API_KEY ||
-//         "694de713-bfb1-4e96-b8a1-a99db6595a0e";
-
-//       await fetch(
-//         `https://www.kickoff.fun/api/projects/${KICKOFF_SLUG}/verify-task`,
-//         {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//             "X-API-Key": KICKOFF_API_KEY,
-//           },
-//           body: JSON.stringify({
-//             walletAddress,
-//             taskType: "connect_wallet",
-//           }),
-//         }
-//       );
-//     } catch (err) {
-//       console.warn("Kickoff verification error:", err);
-//     }
-
-//     // return { walletAddress };
-//     return verifyData.user;
-
-//   };
-
-//   return { authenticateWithWallet };
-// };
-
-
-
-
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/providers/AuthProvider";
-import { useAccount, useSignMessage } from "wagmi";
+import { useAccount, useSignMessage, useChainId } from "wagmi";
+import { useState, useCallback, useRef, useEffect } from "react";
+
+interface AuthError extends Error {
+  code?: string;
+  statusCode?: number;
+}
+
+interface NonceResponse {
+  nonce: string;
+  expiresAt: number;
+}
+
+interface VerifyResponse {
+  token: string;
+  user: {
+    id: string;
+    walletAddress: string;
+    // ... other user fields
+  };
+}
 
 export const useWalletAuth = () => {
-const { toast } = useToast();
-const { refresh } = useAuth();
-const { address, isConnected } = useAccount();
-const { signMessageAsync } = useSignMessage();
+  const { toast } = useToast();
+  const { refresh } = useAuth();
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const { signMessageAsync } = useSignMessage();
 
-const authenticateWithWallet = async () => {
-try {
-if (!isConnected || !address) {
-throw new Error("Please connect your wallet before continuing");
-}
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [error, setError] = useState<AuthError | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const walletAddress = address.toLowerCase();
-
-  // 1️⃣ Request nonce from backend
-  const nonceRes = await fetch(
-    `${import.meta.env.VITE_API_URL}/api/auth/wallet/request`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ walletAddress }),
-    }
-  );
-
-  const nonceData = await nonceRes.json();
-  if (!nonceRes.ok) {
-    throw new Error(nonceData.message || "Failed to request nonce");
-  }
-
-  const message = `BaseConnect authentication nonce: ${nonceData.nonce}`;
-
-  // 2️⃣ Sign the message using Wagmi (do NOT pass account)
-  const signature = await signMessageAsync({ message });
-
-  // 3️⃣ Verify signed message with backend
-  const verifyRes = await fetch(
-    `${import.meta.env.VITE_API_URL}/api/auth/wallet/verify`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ walletAddress, signature }),
-    }
-  );
-
-  const verifyData = await verifyRes.json();
-  if (!verifyRes.ok) {
-    throw new Error(verifyData.message || "Wallet authentication failed");
-  }
-
-  // Store JWT
-  localStorage.setItem("token", verifyData.token);
-
-  await refresh();
-
-  // 4️⃣ Non-blocking: Kickoff task verification
-  try {
-    const KICKOFF_SLUG =
-      import.meta.env.VITE_KICKOFF_SLUG || "baseconnect";
-    const KICKOFF_API_KEY =
-      import.meta.env.VITE_KICKOFF_API_KEY ||
-      "694de713-bfb1-4e96-b8a1-a99db6595a0e";
-
-    await fetch(
-      `https://www.kickoff.fun/api/projects/${KICKOFF_SLUG}/verify-task`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-Key": KICKOFF_API_KEY,
-        },
-        body: JSON.stringify({
-          walletAddress,
-          taskType: "connect_wallet",
-        }),
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
-    );
-  } catch (err) {
-    console.warn("Kickoff verification error:", err);
-  }
+    };
+  }, []);
 
-  // Return authenticated user object
-  return verifyData.user;
-} catch (error) {
-  console.error("Wallet authentication error:", error);
-  toast({
-    title: "Wallet Authentication Failed",
-    description: error instanceof Error ? error.message : "Please try again",
-    variant: "destructive",
-  });
-  throw error;
+  const authenticateWithWallet = useCallback(async () => {
+    // Prevent multiple simultaneous auth attempts
+    if (isAuthenticating) {
+      console.warn("Authentication already in progress");
+      return;
+    }
+
+    // Reset state
+    setError(null);
+    setIsAuthenticating(true);
+
+    // Create abort controller for this request
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
+    try {
+      // Validation
+      if (!isConnected || !address) {
+        throw new Error("Please connect your wallet before continuing");
+      }
+
+      if (!chainId) {
+        throw new Error("Could not determine network. Please check your wallet connection");
+      }
+
+      const walletAddress = address.toLowerCase();
+      const API_URL = import.meta.env.VITE_API_URL;
+
+      if (!API_URL) {
+        throw new Error("API configuration missing. Please contact support");
+      }
+
+      // 1️⃣ Request nonce from backend with timeout
+      const nonceRes = await fetchWithTimeout(
+        `${API_URL}/api/auth/wallet/request`,
+        {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "X-Client-Version": "1.0.0", // For version tracking
+          },
+          body: JSON.stringify({ 
+            walletAddress,
+            chainId, // Include chain ID for validation
+          }),
+          signal,
+        },
+        10000 // 10 second timeout
+      );
+
+      const nonceData: NonceResponse = await nonceRes.json();
+      
+      if (!nonceRes.ok) {
+        const error: AuthError = new Error(nonceData.message || "Failed to request nonce");
+        error.statusCode = nonceRes.status;
+        throw error;
+      }
+
+      // Validate nonce
+      if (!nonceData.nonce || typeof nonceData.nonce !== "string") {
+        throw new Error("Invalid nonce received from server");
+      }
+
+      // Check if nonce expired (if backend sends expiry)
+      if (nonceData.expiresAt && Date.now() > nonceData.expiresAt) {
+        throw new Error("Authentication nonce expired. Please try again");
+      }
+
+      // 2️⃣ Create more robust message with context
+      const timestamp = Date.now();
+      const message = [
+        "BaseConnect Authentication",
+        `Wallet: ${walletAddress}`,
+        `Chain ID: ${chainId}`,
+        `Nonce: ${nonceData.nonce}`,
+        `Timestamp: ${timestamp}`,
+        "",
+        "Sign this message to authenticate your wallet.",
+        "This will not trigger any blockchain transaction or cost gas fees."
+      ].join("\n");
+
+      // 3️⃣ Sign the message
+      let signature: string;
+      try {
+        signature = await signMessageAsync({ message });
+      } catch (signError) {
+        // User rejected signature
+        if (signError instanceof Error && signError.message.includes("User rejected")) {
+          throw new Error("Signature request was rejected");
+        }
+        throw new Error("Failed to sign message. Please try again");
+      }
+
+      // 4️⃣ Verify signed message with backend
+      const verifyRes = await fetchWithTimeout(
+        `${API_URL}/api/auth/wallet/verify`,
+        {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "X-Client-Version": "1.0.0",
+          },
+          body: JSON.stringify({ 
+            walletAddress,
+            chainId,
+            signature,
+            message, // Send original message for verification
+            timestamp,
+          }),
+          signal,
+        },
+        10000
+      );
+
+      const verifyData: VerifyResponse = await verifyRes.json();
+      
+      if (!verifyRes.ok) {
+        const error: AuthError = new Error(verifyData.message || "Wallet authentication failed");
+        error.statusCode = verifyRes.status;
+        throw error;
+      }
+
+      // Validate token
+      if (!verifyData.token || typeof verifyData.token !== "string") {
+        throw new Error("Invalid authentication token received");
+      }
+
+      // 5️⃣ Store JWT in httpOnly cookie (if backend supports) or sessionStorage
+      // BETTER: Let backend set httpOnly cookie, don't store in frontend
+      // If you must store client-side, use sessionStorage (cleared on tab close)
+      sessionStorage.setItem("authToken", verifyData.token);
+      
+      // Set auth header for subsequent requests
+      // Better to handle this in axios/fetch interceptor
+      
+      // Refresh auth state
+      await refresh();
+
+      // 6️⃣ Kickoff verification (move to backend for security)
+      // This should be done server-side to protect API keys
+      try {
+        await fetch(`${API_URL}/api/integrations/kickoff/verify`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${verifyData.token}`,
+          },
+          body: JSON.stringify({
+            taskType: "connect_wallet",
+          }),
+          signal,
+        });
+      } catch (kickoffError) {
+        // Log but don't fail authentication
+        console.warn("Kickoff verification error:", kickoffError);
+      }
+
+      toast({
+        title: "Wallet Connected",
+        description: `Successfully authenticated with ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`,
+      });
+
+      return verifyData.user;
+
+    } catch (error) {
+      // Don't show error if request was aborted (component unmounted)
+      if (error instanceof Error && error.name === "AbortError") {
+        console.log("Authentication request cancelled");
+        return;
+      }
+
+      console.error("Wallet authentication error:", error);
+      
+      const authError = error as AuthError;
+      setError(authError);
+
+      // More specific error messages
+      let errorTitle = "Wallet Authentication Failed";
+      let errorDescription = "Please try again";
+
+      if (authError.statusCode === 429) {
+        errorTitle = "Too Many Attempts";
+        errorDescription = "Please wait a moment before trying again";
+      } else if (authError.statusCode === 401) {
+        errorDescription = "Invalid signature. Please try again";
+      } else if (authError.message.includes("network")) {
+        errorDescription = "Network error. Please check your connection";
+      } else if (authError.message) {
+        errorDescription = authError.message;
+      }
+
+      toast({
+        title: errorTitle,
+        description: errorDescription,
+        variant: "destructive",
+      });
+      
+      throw error;
+      
+    } finally {
+      setIsAuthenticating(false);
+      abortControllerRef.current = null;
+    }
+  }, [address, chainId, isConnected, isAuthenticating, refresh, signMessageAsync, toast]);
+
+  // Helper to cancel ongoing authentication
+  const cancelAuthentication = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      setIsAuthenticating(false);
+    }
+  }, []);
+
+  return { 
+    authenticateWithWallet,
+    cancelAuthentication,
+    isAuthenticating,
+    error,
+  };
+};
+
+// Utility function for fetch with timeout
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  timeout: number
+): Promise<Response> {
+  const controller = new AbortController();
+  const signal = options.signal || controller.signal;
+  
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await fetch(url, { ...options, signal });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("Request timed out. Please try again");
+    }
+    throw error;
+  }
 }
-};
-return { authenticateWithWallet };
-};
